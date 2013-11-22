@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" title="主页视图"
+		backgroundColor="#ffffff" viewActivate="init()"
+		>
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		.myLabel {
+			color: #333333;
+			textAlign:center; 
+			paddingBottom:10;
+		}
+		.itemTitle{
+			fontSize:30;
+		}
+		.itemMore{
+			color: #333333;
+		}
+		.fontSize26{
+			fontSize:26;
+			color: #333333;
+		}
+		.fontSize20{
+			fontSize:18;
+			color: #666666;
+		}
+	</fx:Style>
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			import spark.components.Image;
+			import spark.components.VGroup;
+			import spark.events.ViewNavigatorEvent;
+			
+			import comm.Config;
+			import comm.jxmlLoad;
+			
+			import itemRenderer.CustomIconItemRenderer;
+			import itemRenderer.PagedListSkin;
+			
+			import items.listItem;
+			
+			private var homePhotoArr:Array=["assets/photo1.jpg","assets/photo2.jpg","assets/photo1.jpg","assets/photo2.jpg","assets/photo1.jpg","assets/photo2.jpg"];
+			private var homeBannerPhotoArr:Array=["assets/ss_topbanner4.jpg","assets/ss_topbanner2.jpg","assets/ss_topbanner3.jpg","assets/ss_topbanner1.jpg"];
+			
+			protected function init():void {
+				for(var i:int=0;i<homeBannerPhotoArr.length;i++){
+					arrlist.addItem({ico:homeBannerPhotoArr[i]});
+					}
+				
+				
+				for(var j:int=0;j<homePhotoArr.length;j++){
+					rensetTileGroup(homePhotoArr[j],String(j),String(j));
+					
+				}
+			}
+			
+			
+			private function rensetTileGroup(_imgurl:String,_name:String,_title:String):void
+			{				
+				
+				var _img:Image=new Image;
+				var _VGroup:VGroup=new VGroup();
+				_img.cacheAsBitmap=true;
+				_img.source=_imgurl;
+				_img.scaleMode="zoom";
+				_img.smooth=true ;
+				_img.width=(this.width-40)/3;
+				_img.height=_img.width;
+				var _txt:Label=new Label();
+				_txt.styleName="myLabel";
+				_txt.text=_title;
+				_txt.width=_img.width;
+				_VGroup.addElement(_img);
+				_VGroup.addElement(_txt);
+				tileGroup.addElement(_VGroup);
+				
+/*				_img.name=_name;
+				_img.alpha=0;
+				_img.addEventListener(MouseEvent.CLICK,onClick);					
+				_img.addEventListener(FlexEvent.CREATION_COMPLETE, CreateCompleteHandler);*/
+				
+			}
+			
+			private function onClickMore():void{
+				trace("hi 1")
+			}
+		]]>
+	</fx:Script>
+	<s:Scroller id="theScroller" height="{this.height}" width="{this.width}" verticalScrollPolicy="on" horizontalScrollPolicy="off" skinClass="skin.myScroller">
+		
+		<s:VGroup >
+			<s:List id="pagedList" width="{this.width}" height="{this.height*0.3}" verticalScrollPolicy="off" horizontalScrollPolicy="on"
+					pageScrollingEnabled="true" itemRenderer="itemRenderer.CustomIconItemRenderer" skinClass="itemRenderer.PagedListSkin" >
+				<s:layout>
+					<s:TileLayout orientation="rows" requestedRowCount="1" columnWidth="{pagedList.width}" rowHeight="{pagedList.height}" 
+					verticalGap="0" horizontalGap="0" />
+				</s:layout>
+				<s:dataProvider><s:ArrayList id="arrlist" /></s:dataProvider>
+				
+			</s:List>
+			
+			<s:VGroup y="{pagedList.height}" paddingTop="10" paddingLeft="10" paddingRight="10" paddingBottom="10" width="{this.width}">
+				<s:HGroup width="{this.width}" paddingTop="10">
+					<s:Label styleName="itemTitle" text="推荐童星" width="{this.width-moreBT.width-20}"/><s:Label id="moreBT"  styleName="itemMore"  text="更多>" paddingRight="10" click="onClickMore()"/>
+				</s:HGroup>
+				<s:TileGroup id="tileGroup" horizontalGap="{10}" verticalGap="{10}" requestedColumnCount="3"/>
+				
+				<s:HGroup width="{this.width}" paddingTop="10">
+					<s:Label styleName="itemTitle" text="推荐歌曲" width="{this.width-moreBT.width-20}"/><s:Label id="moreBT2" styleName="itemMore"  text="更多>" paddingRight="10" click="onClickMore()"/>
+				</s:HGroup>
+			<s:List id="theListMusic" contentBackgroundAlpha="0" width="{this.width}" height="400" verticalScrollPolicy="off" horizontalScrollPolicy="off" itemRenderer="items.listItem" >	
+				<s:ArrayList> 	
+					<fx:Object uid="1" brief="演唱者：周漾玥  时长：3:00" name="歌曲名：dlamwz" source="../assets/musicCatlog.jpg"/> 	
+					<fx:Object uid="2" brief="演唱者：周漾玥  时长：3:00"  name="刻意过活刻意过过活" source="../assets/musicCatlog.jpg"/> 	
+					<fx:Object uid="3" brief="演唱者：周漾玥  时长：3:00"  name="不能失去" source="../assets/musicCatlog.jpg"/> 	
+					<fx:Object uid="4" brief="演唱者：周漾玥  时长：3:00"  name="无语问人" source="../assets/musicCatlog.jpg"/> 	
+				</s:ArrayList> 	
+			</s:List>
+				
+				<s:HGroup width="{this.width}" paddingTop="10">
+					<s:Label styleName="itemTitle" text="热点新闻" width="{this.width-moreBT.width-20}"/><s:Label id="moreBT3" styleName="itemMore"  text="更多>" paddingRight="10" click="onClickMore()"/>
+				</s:HGroup>
+				<s:List id="theListNews" contentBackgroundAlpha="0" width="{this.width}" height="400" verticalScrollPolicy="off" horizontalScrollPolicy="off" itemRenderer="items.listItem" >	
+					<s:ArrayList> 	
+						<fx:Object uid="1" brief="时间：2013/10/11  热度：1000" name="星概念童星应邀参加周笔畅..." source="../assets/musicCatlog2.jpg"/> 	
+						<fx:Object uid="2" brief="时间：2013/10/11  热度：1000"  name="星概念旗下童星汪拉拉最新..." source="../assets/musicCatlog2.jpg"/> 	
+						<fx:Object uid="3" brief="时间：2013/10/11  热度：1000"  name="不能失去" source="../assets/musicCatlog2.jpg"/> 	
+						<fx:Object uid="4" brief="时间：2013/10/11  热度：1000"  name="无语问人" source="../assets/musicCatlog2.jpg"/> 	
+					</s:ArrayList> 	
+				</s:List>
+			</s:VGroup>
+			
+			
+			
+		</s:VGroup>
+		
+		
+	</s:Scroller>
+	
+	
+</s:View>

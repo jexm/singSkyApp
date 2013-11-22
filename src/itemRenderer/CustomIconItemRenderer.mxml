@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark">
+		<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		@namespace mx "library://ns.adobe.com/flex/mx";
+
+			
+	</fx:Style>
+	<fx:Script>
+		<![CDATA[
+			private function loadcom():void{
+				pre.visible=false;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:BitmapImage complete="loadcom()" smooth="true" id="queueView"  source="{data.ico}" width="{this.width}" height="{this.height}" fillMode="scale" verticalAlign="middle" horizontalAlign="center" scaleMode="zoom" />
+	<s:BusyIndicator id="pre" symbolColor="white" x="{(this.width-pre.width)/2}" y="{(this.height-pre.height)/2}"/>
+</s:ItemRenderer>
