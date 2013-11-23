@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" title="about">
+	<s:VGroup>
+		
+	<s:TextArea  text="新京报讯近日，网上一则“三小孩扶起摔倒老太婆，反被诬陷索赔”的帖文引起了广泛关注。昨日，事发地的四川达州警方称，受伤老太蒋某某系自己摔倒，其行为属于敲诈勒索，决定对其给予行政拘留7日的处罚。因蒋某某已满70周岁，依法决定不予执行。" />
+	<s:Button click="navigator.popToFirstView();"/>
+	</s:VGroup>
+</s:View>

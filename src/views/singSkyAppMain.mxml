@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		xmlns:s="library://ns.adobe.com/flex/spark" title="主页视图"
-		backgroundColor="#ffffff" viewActivate="init()"
+		backgroundColor="#ffffff" creationComplete="init()" destructionPolicy="never" xmlns:views="views.*" 
 		>
 	<fx:Style>
 		@namespace s "library://ns.adobe.com/flex/spark";
@@ -41,6 +41,8 @@
 			
 			import items.listItem;
 			
+			import tools.MusicPlayer;
+			
 			private var homePhotoArr:Array=["assets/photo1.jpg","assets/photo2.jpg","assets/photo1.jpg","assets/photo2.jpg","assets/photo1.jpg","assets/photo2.jpg"];
 			private var homeBannerPhotoArr:Array=["assets/ss_topbanner4.jpg","assets/ss_topbanner2.jpg","assets/ss_topbanner3.jpg","assets/ss_topbanner1.jpg"];
 			
@@ -77,15 +79,26 @@
 				tileGroup.addElement(_VGroup);
 				
 /*				_img.name=_name;
-				_img.alpha=0;
-				_img.addEventListener(MouseEvent.CLICK,onClick);					
+				_img.alpha=0;				
 				_img.addEventListener(FlexEvent.CREATION_COMPLETE, CreateCompleteHandler);*/
+				_img.addEventListener(MouseEvent.CLICK,imgonClick);	
 				
 			}
+			protected function imgonClick(e:MouseEvent):void
+			{
+				navigator.pushView(views.about);
+			}
+			import views.musicPlayer;
 			
+			protected function onClick():void
+			{
+				myMusicPlayer.init();
+				myMusicPlayer.visible=true;
+			}
 			private function onClickMore():void{
 				trace("hi 1")
 			}
+			
 		]]>
 	</fx:Script>
 	<s:Scroller id="theScroller" height="{this.height}" width="{this.width}" verticalScrollPolicy="on" horizontalScrollPolicy="off" skinClass="skin.myScroller">
@@ -110,7 +123,7 @@
 				<s:HGroup width="{this.width}" paddingTop="10">
 					<s:Label styleName="itemTitle" text="推荐歌曲" width="{this.width-moreBT.width-20}"/><s:Label id="moreBT2" styleName="itemMore"  text="更多>" paddingRight="10" click="onClickMore()"/>
 				</s:HGroup>
-			<s:List id="theListMusic" contentBackgroundAlpha="0" width="{this.width}" height="400" verticalScrollPolicy="off" horizontalScrollPolicy="off" itemRenderer="items.listItem" >	
+			<s:List id="theListMusic" change="onClick()" contentBackgroundAlpha="0" width="{this.width}" height="400" verticalScrollPolicy="off" horizontalScrollPolicy="off" itemRenderer="items.listItem" >	
 				<s:ArrayList> 	
 					<fx:Object uid="1" brief="演唱者：周漾玥  时长：3:00" name="歌曲名：dlamwz" source="../assets/musicCatlog.jpg"/> 	
 					<fx:Object uid="2" brief="演唱者：周漾玥  时长：3:00"  name="刻意过活刻意过过活" source="../assets/musicCatlog.jpg"/> 	
@@ -130,14 +143,8 @@
 						<fx:Object uid="4" brief="时间：2013/10/11  热度：1000"  name="无语问人" source="../assets/musicCatlog2.jpg"/> 	
 					</s:ArrayList> 	
 				</s:List>
-			</s:VGroup>
-			
-			
-			
+			</s:VGroup>			
 		</s:VGroup>
-		
-		
 	</s:Scroller>
-	
-	
+	<views:musicPlayer id="myMusicPlayer" bottom="0" theWidth="{this.width}" visible="false"/>
 </s:View>

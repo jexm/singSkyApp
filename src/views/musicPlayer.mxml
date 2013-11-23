@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" title="musicPlayer" contentBackgroundAlpha="0" backgroundAlpha="0.6">
+	
+	<fx:Script>
+		<![CDATA[
+			import flash.net.URLRequest;
+			
+			import comm.Config;
+			
+			private var soundFactory:Sound;  
+			private var channel:SoundChannel;  
+			private var position:Number = 0;  
+			[Bindable]private var isPlaying:Boolean;
+			private var soundURL:String;
+			private var isHide:Boolean;
+			private var positionTimer:Timer;
+			private var pausePoint:Number=0;
+			protected var soundsCache:Object = new Object();
+			private var isPause:Boolean;
+			private var totalposition:Number;
+			
+			[Bindable]private var _thewidth:Number=320;
+			public function set theWidth(_w:Number):void{
+				_thewidth=_w;
+			}
+			public function init(str:String="assets/mp3/1.mp3"):void{
+				
+				soundFactory = getSound(str);
+				channel = soundFactory.play();
+				isPlaying=true;
+				channel.addEventListener(flash.events.Event.SOUND_COMPLETE, soundCompleteHandler);
+				
+				positionTimer = new Timer(100);
+				positionTimer.addEventListener(TimerEvent.TIMER, positionTimerHandler);
+				positionTimer.start();
+
+			}
+			private function soundCompleteHandler(event:flash.events.Event):void {
+				trace("播放结束,id: " );
+				//positionTimer.stop();
+				//playNext();
+			}
+			private function positionTimerHandler(event:TimerEvent):void {
+				totalposition = Number(soundFactory.length.toFixed(0));
+				var _position:Number =Number(channel.position.toFixed(0));
+				var __w:Number=Number((_position/totalposition).toFixed(2));
+				trace("totale length:"+totalposition);
+				trace("length:"+setTimerStyle(totalposition));
+				trace("_position: " + setTimerStyle(_position));
+				trace("__w: " + __w);
+				playedSlider.value=__w*100;
+				timeTxt.text=setTimerStyle(_position)+"/"+setTimerStyle(totalposition);
+			}
+			
+			private function playMp3():void{ 
+				if(isPlaying){
+					stopSound();
+				}
+				init();
+			}  
+			public function stopSound(){
+				if(isPlaying){
+					channel.stop();
+					isPlaying = false;
+					pausePoint=0;
+					positionTimer.stop();
+				}
+				
+			}
+		
+			private function getSound(soundUrl:String):Sound {
+				var cachedSound:Sound = soundsCache[soundUrl] as Sound;
+				if(cachedSound != null) {
+					return cachedSound;
+				}
+				var sound:Sound = new Sound();
+				var request:URLRequest = new URLRequest(soundUrl);
+				var ioErrorHandler:Function = function(event:IOErrorEvent):void { 
+					trace("请检查网络，再重新播放歌曲");
+					positionTimer.stop();
+					sound.removeEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler); 
+					sound.removeEventListener(flash.events.Event.COMPLETE, completeHandler); 
+				};
+				var completeHandler:Function = function(event:flash.events.Event):void {
+					soundsCache[soundUrl] = sound;
+					sound.removeEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler); 
+					sound.removeEventListener(flash.events.Event.COMPLETE, completeHandler); 
+				};
+				var onProgressEvent:Function = function(event:flash.events.ProgressEvent):void {
+					trace("startloading");
+				};
+				sound.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+				sound.addEventListener(flash.events.Event.COMPLETE, completeHandler);
+				sound.addEventListener(flash.events.ProgressEvent.PROGRESS, onProgressEvent);
+				sound.load(request);  
+				return sound;
+			}
+			
+			//返回时间格式
+			private function setTimerStyle(time:Number):String{			
+				var _m = Math.floor(time/60000);
+				var _s = Math.ceil(time%60000/1000);
+				/*			trace(time/1000+"秒");
+				trace(_m+"分，"+_s+"秒");*/
+				var _r = _m+":"+_s;
+				return _r;
+			}
+			
+			public function hidePlayer():void{
+				if(isHide){
+					isHide=false;
+					playerContentBT.visible=false;
+					playerContent.visible=true;
+				}else{
+					isHide=true;
+					playerContentBT.visible=true;
+					playerContent.visible=false;
+				}
+				
+			}
+			
+			public function paueSound():void{
+				channel.stop();
+				isPlaying = false;
+				pausePoint = channel.position;
+				positionTimer.stop();
+				isPause = true;
+			}
+			public function goPlay():void{
+				if (isPause) {
+					pausePoint = channel.position;
+					channel.stop();
+					isPlaying = false;
+					positionTimer.stop();
+					trace("pausePoint:"+pausePoint);
+				} else {
+					channel = soundFactory.play(pausePoint);
+					isPlaying = true;
+					positionTimer.start();
+				}
+				isPause = false;
+			}
+			
+			private function funstartDrag():void{
+				trace("startDrag");
+				positionTimer.stop();
+			}
+			private function funstoptDrag():void{
+				channel.stop();
+				positionTimer.start();
+				var _p=playedSlider.value/100;
+				trace("stoptDrag.."+_p);
+				channel = soundFactory.play(_p*totalposition);
+			}
+		]]>
+	</fx:Script>
+	<s:VGroup width="{_thewidth}" id="playerContentBT" visible="false" bottom="0">
+		<s:Button label="显示" click="hidePlayer()" right="0"/>
+	</s:VGroup>
+	<s:VGroup width="100%"  contentBackgroundAlpha="0" id="playerContent">
+		<s:HSlider id="playedSlider" minimum="0" maximum="100"
+				   liveDragging="true" skinClass="skin.HSliderTrackSkin" width="{_thewidth*0.8}" changeStart="funstartDrag()" changeEnd="funstoptDrag()"/>  
+		<s:HGroup>
+			<s:Button label="播放" enabled="{!isPlaying}" click="goPlay()"/>
+			<s:Button label="暂停" enabled="{isPlaying}" click="paueSound()"/>
+			<s:Button label="停止" enabled="{!isPlaying}" click="stopSound()"/>
+			<s:Button label="隐藏" click="hidePlayer()" right="0"/>
+			<s:Label text="" id="timeTxt" right="0"/>
+		</s:HGroup>
+	</s:VGroup>	
+	
+</s:View>
